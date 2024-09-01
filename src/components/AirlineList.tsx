@@ -39,7 +39,7 @@ const AirlineList: React.FC = () => {
     const fetchData = async (): Promise<void> => {
       try {
         // Fetch the XML file
-        const response = await fetch("/src/data/AirlineData.xml");
+        const response = await fetch("/AirlineData.xml");
         const xmlData = await response.text();
 
         // Parse the XML data into a Document object
