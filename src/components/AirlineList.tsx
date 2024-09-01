@@ -1,53 +1,57 @@
-// Import necessary dependencies from React and other libraries
 import React, { useState, useEffect } from "react";
 import { DOMParser, XMLSerializer } from "xmldom";
 import xpath from "xpath";
 
-// Define the structure of an Airline object
+// TypeScript Interface Definition
+// This defines the shape of an Airline object in TypeScript.
+// It specifies that an Airline must have three properties: name, country, and type, all of which are strings.
+// This helps catch errors if we try to use an Airline object without one of these properties.
 interface Airline {
   name: string;
   country: string;
   type: string;
 }
 
-// Define the possible keys for sorting airlines
+// TypeScript Type Alias
+// This creates a new type called SortKey, which can only be one of the three string values listed.
+// It's used to ensure that we only sort by valid keys (name, country, or type).
 type SortKey = "name" | "country" | "type";
 
-// Define the AirlineList component as a functional component
+// React Functional Component
+// The ": React.FC" part is a TypeScript type annotation specifying that this is a React Functional Component.
 const AirlineList: React.FC = () => {
-  // State for storing the list of airlines
+  // useState hooks with TypeScript
+  // The <Airline[]> syntax specifies that airlines will be an array of Airline objects.
+  // This helps TypeScript provide better autocomplete and catch errors if we try to use airlines incorrectly.
   const [airlines, setAirlines] = useState<Airline[]>([]);
 
-  // State for storing the XML document
+  // The <Document | null> syntax allows xmlDoc to be either a Document object or null.
   const [xmlDoc, setXmlDoc] = useState<Document | null>(null);
 
-  // State for storing the details of a new airline being added
+  // This initializes newAirline with an object that matches the Airline interface.
   const [newAirline, setNewAirline] = useState<Airline>({
     name: "",
     country: "",
     type: "",
   });
 
-  // State for storing the current sort key
+  // These specify that sortKey must be a SortKey type, and sortDirection must be either "asc" or "desc".
   const [sortKey, setSortKey] = useState<SortKey>("name");
-
-  // State for storing the current sort direction
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // useEffect hook to fetch and parse XML data when the component mounts
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        // Fetch the XML file
-        const response = await fetch("/AirlineData.xml");
+        const response = await fetch("./AirlineData.xml");
         const xmlData = await response.text();
 
-        // Parse the XML data into a Document object
+        // XML Parsing
+        // This creates a new DOMParser object, which can parse XML strings into DOM objects.
         const parser = new DOMParser();
+        // This parses the XML string into a Document object, which represents the entire XML document.
         const doc = parser.parseFromString(xmlData, "text/xml");
         setXmlDoc(doc);
 
-        // Update the airline list with the parsed data
         updateAirlineList(doc);
       } catch (error) {
         console.error("Error fetching or parsing XML:", error);
@@ -55,101 +59,112 @@ const AirlineList: React.FC = () => {
     };
 
     fetchData();
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, []);
 
-  // Function to update the airline list from the XML document
   const updateAirlineList = (doc: Document) => {
-    // Select all 'airline' nodes from the XML using XPath
+    // XPath Usage
+    // This XPath expression "//airline" selects all 'airline' elements in the document, regardless of their position.
+    // The '//' means "search the entire document for elements named 'airline'".
     const airlineNodes = xpath.select("//airline", doc) as Node[];
 
-    // Map the XML nodes to Airline objects
+    // This maps over each selected Node, extracting data using more specific XPath expressions.
     const airlineData: Airline[] = airlineNodes.map((node) => ({
-      name: xpath.select1("name/text()", node)?.nodeValue || "Unknown",
-      country: xpath.select1("country/text()", node)?.nodeValue || "Unknown",
-      type: xpath.select1("type/text()", node)?.nodeValue || "Unknown",
+      // This XPath expression selects the text content of the 'name' child element of the current 'airline' element.
+      // The '.' at the start means "start from the current node (an 'airline' element)".
+      // The '/text()' at the end selects the text content of the selected element.
+      name: xpath.select1("./name/text()", node)?.nodeValue || "Unknown",
+      country: xpath.select1("./country/text()", node)?.nodeValue || "Unknown",
+      type: xpath.select1("./type/text()", node)?.nodeValue || "Unknown",
     }));
 
-    // Update the airlines state with the new data
     setAirlines(airlineData);
   };
 
-  // Handler for input changes in the add airline form
+  // Event handler with TypeScript
+  // This specifies that the event 'e' is a change event from either an input or select element.
+  // It allows TypeScript to know what properties and methods are available on 'e' and 'e.target'.
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    // Update the newAirline state, keeping existing values and changing only the edited field
+    // This uses the spread operator (...) to create a new object based on the previous state,
+    // updating only the property that matches the input's 'name'.
+    // The [name] syntax is using computed property names to dynamically set the property.
     setNewAirline((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handler for form submission when adding a new airline
+  // Event handler for form submission
+  // This specifies that 'e' is a form submission event.
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (xmlDoc) {
-      // Create new XML elements for the new airline
+      // XML Manipulation
+      // These lines create new XML elements and set their text content.
       const newAirlineElement = xmlDoc.createElement("airline");
       const nameElement = xmlDoc.createElement("name");
       const countryElement = xmlDoc.createElement("country");
       const typeElement = xmlDoc.createElement("type");
 
-      // Set the text content of the new elements
       nameElement.textContent = newAirline.name;
       countryElement.textContent = newAirline.country;
       typeElement.textContent = newAirline.type;
 
-      // Append the new elements to the airline element
+      // This appends the new elements to create the structure:
+      // <airline>
+      //   <name>...</name>
+      //   <country>...</country>
+      //   <type>...</type>
+      // </airline>
       newAirlineElement.appendChild(nameElement);
       newAirlineElement.appendChild(countryElement);
       newAirlineElement.appendChild(typeElement);
 
-      // Append the new airline element to the root of the XML document
+      // This adds the new airline element to the root of the XML document.
       const airlinesElement = xmlDoc.documentElement;
       airlinesElement.appendChild(newAirlineElement);
 
-      // Update the airline list with the new data
       updateAirlineList(xmlDoc);
-      // Reset the newAirline state
       setNewAirline({ name: "", country: "", type: "" });
 
-      // In a real application, you would save the updated XML here
-      // For now, we'll just log it to the console
+      // XML Serialization
+      // This converts the XML Document object back into a string representation.
       const serializer = new XMLSerializer();
       console.log(serializer.serializeToString(xmlDoc));
     }
   };
 
-  // Handler for sorting the airline list
+  // Event handler for sorting
+  // This specifies that the 'key' parameter must be of type SortKey.
   const handleSort = (key: SortKey) => {
     if (key === sortKey) {
-      // If the same key is clicked, reverse the sort direction
+      // This uses a ternary operator to toggle the sort direction.
       setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
-      // If a new key is clicked, set it as the sort key and default to ascending order
       setSortKey(key);
       setSortDirection("asc");
     }
   };
 
-  // Create a sorted copy of the airlines array based on current sort key and direction
-  const sortedAirlines = [...airlines].sort((a, b) => {
+  // Sorting logic
+  // This creates a new sorted array based on the current sort key and direction.
+  // The '<Airline>' type parameter ensures type safety when sorting.
+  const sortedAirlines = [...airlines].sort((a: Airline, b: Airline) => {
     if (a[sortKey] < b[sortKey]) return sortDirection === "asc" ? -1 : 1;
     if (a[sortKey] > b[sortKey]) return sortDirection === "asc" ? 1 : -1;
     return 0;
   });
 
-  // Render the component
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
         Airlines
       </h1>
 
-      {/* Form for adding a new airline */}
+      {/* Add Airline Form */}
       <form
         onSubmit={handleSubmit}
-        className=" bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
       >
-        {/* Input field for airline name */}
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
@@ -167,7 +182,6 @@ const AirlineList: React.FC = () => {
             required
           />
         </div>
-        {/* Input field for country */}
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
@@ -185,7 +199,6 @@ const AirlineList: React.FC = () => {
             required
           />
         </div>
-        {/* Dropdown for airline type */}
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
@@ -207,7 +220,6 @@ const AirlineList: React.FC = () => {
             <option value="Cargo">Cargo</option>
           </select>
         </div>
-        {/* Submit button for the form */}
         <div className="flex items-center justify-between">
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -218,7 +230,7 @@ const AirlineList: React.FC = () => {
         </div>
       </form>
 
-      {/* Buttons for sorting the airline list */}
+      {/* Sort Buttons */}
       <div className="mb-4 flex space-x-2">
         <button
           onClick={() => handleSort("name")}
@@ -243,7 +255,7 @@ const AirlineList: React.FC = () => {
         </button>
       </div>
 
-      {/* List of airlines */}
+      {/* Airline List */}
       <ul className="bg-white shadow-md rounded-lg overflow-hidden">
         {sortedAirlines.map((airline, index) => (
           <li
@@ -260,5 +272,4 @@ const AirlineList: React.FC = () => {
   );
 };
 
-// Export the AirlineList component as the default export
 export default AirlineList;
