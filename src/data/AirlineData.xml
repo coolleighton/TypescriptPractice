@@ -1,0 +1,105 @@
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <airlines>
+          <airline>
+            <name>American Airlines</name>
+            <country>United States</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Delta Air Lines</name>
+            <country>United States</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>United Airlines</name>
+            <country>United States</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Lufthansa</name>
+            <country>Germany</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>British Airways</name>
+            <country>United Kingdom</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Air France</name>
+            <country>France</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>KLM Royal Dutch Airlines</name>
+            <country>Netherlands</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Emirates</name>
+            <country>United Arab Emirates</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Qatar Airways</name>
+            <country>Qatar</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Singapore Airlines</name>
+            <country>Singapore</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Ryanair</name>
+            <country>Ireland</country>
+            <type>Low-cost</type>
+          </airline>
+          <airline>
+            <name>EasyJet</name>
+            <country>United Kingdom</country>
+            <type>Low-cost</type>
+          </airline>
+          <airline>
+            <name>Southwest Airlines</name>
+            <country>United States</country>
+            <type>Low-cost</type>
+          </airline>
+          <airline>
+            <name>FedEx Express</name>
+            <country>United States</country>
+            <type>Cargo</type>
+          </airline>
+          <airline>
+            <name>UPS Airlines</name>
+            <country>United States</country>
+            <type>Cargo</type>
+          </airline>
+          <airline>
+            <name>Cathay Pacific</name>
+            <country>Hong Kong</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Air Canada</name>
+            <country>Canada</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Turkish Airlines</name>
+            <country>Turkey</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>Etihad Airways</name>
+            <country>United Arab Emirates</country>
+            <type>Commercial</type>
+          </airline>
+          <airline>
+            <name>AirAsia</name>
+            <country>Malaysia</country>
+            <type>Low-cost</type>
+          </airline>
+        </airlines>
+    
